@@ -39,7 +39,7 @@ func main() {
 	router.HandleFunc("/posts/{id}", updateItem).Methods("PUT")
 	router.HandleFunc("/posts/{id}", patchItem).Methods("PATCH")
 	router.HandleFunc("/posts/{id}", deleteItem).Methods("DELETE")
-	http.ListenAndServe(":9000", router)
+	http.ListenAndServe(":8080", router)
 
 }
 
