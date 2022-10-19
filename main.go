@@ -30,6 +30,7 @@ func main() {
 	router.HandleFunc("/posts", addItems).Methods("POST")
 	router.HandleFunc("/posts/{id}", getPosts).Methods("GET")
 	router.HandleFunc("/posts/{id}", updateItem).Methods("PUT")
+	router.HandleFunc("/posts/{id}", patchItem).Methods("PATCH")
 	http.ListenAndServe(":8080", router)
 
 }
@@ -111,5 +112,42 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 	data[id] = updatedItem
 
 	json.NewEncoder(w).Encode(updatedItem)
+
+}
+
+func patchItem(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "Application/json")
+
+	var idParam string = mux.Vars(r)["id"]
+
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil {
+
+		w.WriteHeader(400)
+		w.Write([]byte("ID could not converted to Integer"))
+		return
+	}
+
+	//error checking
+
+	if id >= len(data) {
+
+		w.WriteHeader(404)
+		w.Write([]byte("No data founded with  specified ID"))
+		return
+
+	}
+
+	// get the  current  value
+
+	patchdata := data[id]
+
+	json.NewDecoder(r.Body).Decode(&patchdata)
+
+	data[id] = patchdata
+
+	json.NewEncoder(w).Encode(patchdata)
 
 }
