@@ -29,6 +29,7 @@ func main() {
 	router.HandleFunc("/posts", getItem).Methods("GET")
 	router.HandleFunc("/posts", addItems).Methods("POST")
 	router.HandleFunc("/posts/{id}", getPosts).Methods("GET")
+	router.HandleFunc("/posts/{id}", updateItem).Methods("PUT")
 	http.ListenAndServe(":8080", router)
 
 }
@@ -75,4 +76,40 @@ func getPosts(w http.ResponseWriter, r *http.Request) {
 	post := data[id]
 
 	json.NewEncoder(w).Encode(post)
+}
+
+func updateItem(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "Application/json")
+
+	var idParam string = mux.Vars(r)["id"]
+
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil {
+
+		w.WriteHeader(400)
+		w.Write([]byte("ID could not converted to Integer"))
+		return
+	}
+
+	//error checking
+
+	if id >= len(data) {
+
+		w.WriteHeader(404)
+		w.Write([]byte("No data founded with  specified ID"))
+		return
+
+	}
+
+	var updatedItem Post
+
+	//updateItem := Post
+
+	json.NewDecoder(r.Body).Decode(&updatedItem)
+
+	data[id] = updatedItem
+
+	json.NewEncoder(w).Encode(updatedItem)
+
 }
